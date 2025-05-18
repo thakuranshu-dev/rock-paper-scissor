@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./components/ui/button";
 import { Card, CardContent } from "./components/ui/card";
 import { motion } from "framer-motion";
+import gsap from "gsap";
 import './App.css';
 
 const choices = ["rock", "paper", "scissors"];
@@ -38,6 +39,9 @@ export default function App() {
   const [userName, setUserName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [inputName, setInputName] = useState("");
+  const [resultTrigger, setResultTrigger] = useState(0);
+
+  const resultRef = useRef(null);
 
   useEffect(() => {
     const storedName = localStorage.getItem("userName");
@@ -47,6 +51,30 @@ export default function App() {
       setShowModal(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!result) return;
+    let color, scale;
+    if (result === "win") {
+      color = "#00fff7";
+      scale = 1.3;
+    } else if (result === "lose") {
+      color = "#ff0055";
+      scale = 1.3;
+    } else {
+      color = "#ffd600";
+      scale = 1.2;
+    }
+    gsap.set(resultRef.current, { scale: 0.8, color: "#fff" });
+    gsap.to(resultRef.current, {
+      scale,
+      color,
+      duration: 0.6,
+      yoyo: true,
+      repeat: 1,
+      ease: "power2.out"
+    });
+  }, [resultTrigger]); // <-- use resultTrigger here
 
   const handleNameSubmit = (e) => {
     e.preventDefault();
@@ -64,6 +92,7 @@ export default function App() {
     setPlayerChoice(choice);
     setComputerChoice(compChoice);
     setResult(gameResult);
+    setResultTrigger((prev) => prev + 1); // Always increment
 
     if (gameResult === "win") {
       setScore((prev) => ({ ...prev, wins: prev.wins + 1 }));
@@ -174,7 +203,11 @@ export default function App() {
         >
           <Card className="mb-4">
             <CardContent className="p-4">
-              <p className="text-lg font-semibold mt-1">
+              <p
+                ref={resultRef}
+                className="text-lg font-semibold mt-1"
+                style={{ transition: "color 0.2s" }}
+              >
                 {result === "draw"
                   ? "It's a draw!"
                   : result === "win"
