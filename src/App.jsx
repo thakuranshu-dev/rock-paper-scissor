@@ -74,7 +74,7 @@ export default function App() {
       repeat: 1,
       ease: "power2.out"
     });
-  }, [resultTrigger]); // <-- use resultTrigger here
+  }, [resultTrigger]);
 
   const handleNameSubmit = (e) => {
     e.preventDefault();
@@ -92,7 +92,7 @@ export default function App() {
     setPlayerChoice(choice);
     setComputerChoice(compChoice);
     setResult(gameResult);
-    setResultTrigger((prev) => prev + 1); // Always increment
+    setResultTrigger((prev) => prev + 1);
 
     if (gameResult === "win") {
       setScore((prev) => ({ ...prev, wins: prev.wins + 1 }));
